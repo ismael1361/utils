@@ -132,6 +132,25 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
+     * Define o emissor como preparado.
+     * @param {boolean} [value=true] - O estado de preparação a ser definido.
+     * @returns {void}
+     *
+     * @example
+     * const emitter = new EventEmitter();
+     *
+     * emitter.ready(() => {
+     *      console.log("O emissor está pronto!");
+     * });
+     *
+     * emitter.prepare();
+     * // Saída: O emissor está pronto!
+     */
+    prepare(value: boolean = true) {
+        this.prepared = value;
+    }
+
+    /**
      * Limpa todos os ouvintes de eventos.
      * @returns {void}
      * @example
