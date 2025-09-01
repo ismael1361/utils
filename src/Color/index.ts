@@ -1,4 +1,5 @@
 import colorNames from "./colorNames";
+import generatePalette, { ColorPalette } from "./generatePalette";
 import HEX from "./hex";
 import RGB from "./rgb";
 import RGBA from "./rgba";
@@ -7,7 +8,7 @@ import HSLA from "./hsla";
 
 export { colorNames, HEX, RGB, RGBA, HSL, HSLA };
 
-type ColorValue = string | Color | HEX | RGB | RGBA | HSL | HSLA;
+export type ColorValue = string | Color | HEX | RGB | RGBA | HSL | HSLA;
 
 export class Color {
     public value: string;
@@ -208,6 +209,33 @@ export class Color {
     get luminance(): number {
         const [r, g, b] = this.rgba.vector;
         return Math.round(0.2126 * r + 0.7152 * g + 0.0722 * b);
+    }
+
+    /**
+     * Gera uma paleta de cores completa com base na cor atual.
+     *
+     * A paleta é um objeto que contém várias tonalidades e sombras da cor base,
+     * geralmente indexadas por chaves numéricas (ex: '50', '100', ..., '900'),
+     * onde a chave '500' costuma representar a cor original.
+     *
+     * A estrutura também pode incluir outros esquemas de cores, como
+     * complementares, análogas, etc.
+     *
+     * @returns {ColorPalette} Um objeto contendo a paleta de cores gerada.
+     *
+     * @example
+     * ```ts
+     * // Acessando um tom específico da paleta (a cor base '500')
+     * const baseColor = new Color("#f44336").palette["500"];
+     * console.log(baseColor.hex.value); // => "#f44336"
+     *
+     * // Acessando um tom mais escuro
+     * const darkRedHex = new Color("#f44336").palette["700"].hex.value;
+     * console.log(darkRedHex); // => (um tom de vermelho mais escuro)
+     * ```
+     */
+    get palette(): ColorPalette {
+        return generatePalette(this);
     }
 
     /**

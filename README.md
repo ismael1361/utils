@@ -56,6 +56,7 @@ yarn add @ismael/utils
       - [`.luminance: number`](#luminance-number)
       - [`.negative: Color`](#negative-color)
       - [`.grayScale: Color`](#grayscale-color)
+      - [`.palette: ColorPalette`](#palette-colorpalette)
     - [Métodos da Instância](#métodos-da-instância-1)
       - [`.blend(color: ColorValue, ratio: number): Color`](#blendcolor-colorvalue-ratio-number-color)
       - [`.lighten(ratio: number): Color`](#lightenratio-number-color)
@@ -620,6 +621,21 @@ Converte a cor para sua equivalente em escala de cinza.
 ```typescript
 const color = new Color('#ff8800'); // Laranja
 console.log(color.grayScale.hex.value); // "#828282"
+```
+
+#### `.palette: ColorPalette`
+
+Gera uma paleta de cores completa com base na cor atual.
+
+A paleta é um objeto que contém várias tonalidades e sombras da cor base, geralmente indexadas por chaves numéricas (ex: '50', '100', ..., '900'), onde a chave '500' costuma representar a cor original.
+
+A estrutura também pode incluir outros esquemas de cores, como complementares, análogas, etc.
+
+**Exemplo:**
+```typescript
+const color = new Color('#f44336'); // Vermelho
+console.log(color.palette['500'].hex.value); // "#f44336"
+console.log(color.palette['700'].hex.value); // "#ba000d"
 ```
 
 ---
