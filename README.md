@@ -30,6 +30,7 @@ yarn add @ismael/utils
     - [`capitalize(str: string): string`](#capitalizestr-string-string)
     - [`slugify(str: string): string`](#slugifystr-string-string)
   - [`EventEmitter<T>`](#eventemittert)
+    - [`class EventEmitter<T>()`](#class-eventemittert)
     - [Propriedades da Instância](#propriedades-da-instância)
       - [`.prepared: boolean`](#prepared-boolean)
     - [Métodos da Instância](#métodos-da-instância)
@@ -200,6 +201,8 @@ console.log(slug);
 ```
 
 ## `EventEmitter<T>`
+
+### `class EventEmitter<T>()`
 
 Uma classe para gerenciar e emitir eventos personalizados de forma tipada.
 
