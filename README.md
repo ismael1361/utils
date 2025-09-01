@@ -31,20 +31,20 @@ yarn add @ismael/utils
     - [`slugify(str: string): string`](#slugifystr-string-string)
   - [Class](#class)
     - [`EventEmitter<T>`](#eventemittert)
-    - [Propriedades da Instância](#propriedades-da-instância)
-      - [`.prepared: boolean`](#prepared-boolean)
-    - [Métodos da Instância](#métodos-da-instância)
-      - [`.prepare(value?: boolean): void`](#preparevalue-boolean-void)
-      - [`.ready<R = never>(callback?: () => R | Promise<R>): Promise<R>`](#readyr--nevercallback---r--promiser-promiser)
-      - [`.clearEvents(): void`](#clearevents-void)
-      - [`.on<K>(event: K, callback: SubscriptionCallback<T[K]>): EventHandler`](#onkevent-k-callback-subscriptioncallbacktk-eventhandler)
-      - [`.once<K, R>(event: K, callback?: (...args: T[K]) => R): Promise<R | undefined>`](#oncek-revent-k-callback-args-tk--r-promiser--undefined)
-      - [`.emit<K>(event: K, ...args: T[K]): EventEmitter<T>`](#emitkevent-k-args-tk-eventemittert)
-      - [`.emitOnce<K>(event: K, ...args: T[K]): EventEmitter<T>`](#emitoncekevent-k-args-tk-eventemittert)
-      - [`.off<K>(event: K, callback?: SubscriptionCallback<T[K]>): void`](#offkevent-k-callback-subscriptioncallbacktk-void)
-      - [`.offOnce<K>(event: K, callback?: (...args: T[K]) => any): void`](#offoncekevent-k-callback-args-tk--any-void)
-      - [`.pipe<K>(event: K, eventEmitter: EventEmitter<T>): EventHandler`](#pipekevent-k-eventemitter-eventemittert-eventhandler)
-      - [`.pipeOnce<K>(event: K, eventEmitter: EventEmitter<T>): EventHandler`](#pipeoncekevent-k-eventemitter-eventemittert-eventhandler)
+      - [Propriedades da Instância](#propriedades-da-instância)
+        - [`.prepared: boolean`](#prepared-boolean)
+      - [Métodos da Instância](#métodos-da-instância)
+        - [`.prepare(value?: boolean): void`](#preparevalue-boolean-void)
+        - [`.ready<R = never>(callback?: () => R | Promise<R>): Promise<R>`](#readyr--nevercallback---r--promiser-promiser)
+        - [`.clearEvents(): void`](#clearevents-void)
+        - [`.on<K>(event: K, callback: SubscriptionCallback<T[K]>): EventHandler`](#onkevent-k-callback-subscriptioncallbacktk-eventhandler)
+        - [`.once<K, R>(event: K, callback?: (...args: T[K]) => R): Promise<R | undefined>`](#oncek-revent-k-callback-args-tk--r-promiser--undefined)
+        - [`.emit<K>(event: K, ...args: T[K]): EventEmitter<T>`](#emitkevent-k-args-tk-eventemittert)
+        - [`.emitOnce<K>(event: K, ...args: T[K]): EventEmitter<T>`](#emitoncekevent-k-args-tk-eventemittert)
+        - [`.off<K>(event: K, callback?: SubscriptionCallback<T[K]>): void`](#offkevent-k-callback-subscriptioncallbacktk-void)
+        - [`.offOnce<K>(event: K, callback?: (...args: T[K]) => any): void`](#offoncekevent-k-callback-args-tk--any-void)
+        - [`.pipe<K>(event: K, eventEmitter: EventEmitter<T>): EventHandler`](#pipekevent-k-eventemitter-eventemittert-eventhandler)
+        - [`.pipeOnce<K>(event: K, eventEmitter: EventEmitter<T>): EventHandler`](#pipeoncekevent-k-eventemitter-eventemittert-eventhandler)
   - [Color](#color)
     - [`class Color(value: ColorValue)`](#class-colorvalue-colorvalue)
     - [Propriedades da Instância](#propriedades-da-instância-1)
@@ -243,9 +243,9 @@ emitter.emit("despedida", "Mundo", "não será exibido");
 
 ---
 
-### Propriedades da Instância
+#### Propriedades da Instância
 
-#### `.prepared: boolean`
+##### `.prepared: boolean`
 
 Indica se a instância foi preparada.
 
@@ -264,9 +264,9 @@ console.log(emitter.prepared); // true
 
 ---
 
-### Métodos da Instância
+#### Métodos da Instância
 
-#### `.prepare(value?: boolean): void`
+##### `.prepare(value?: boolean): void`
 
 Prepara a instância para receber ou emitir eventos.
 
@@ -284,7 +284,7 @@ emitter.prepare();
 // Saída: O emissor está pronto!
 ```
 
-#### `.ready<R = never>(callback?: () => R | Promise<R>): Promise<R>`
+##### `.ready<R = never>(callback?: () => R | Promise<R>): Promise<R>`
 
 Registra uma função para ser executada quando a instância estiver pronta.
 
@@ -302,7 +302,7 @@ emitter.prepared = true;
 // Saída: O emissor está pronto!
 ```
 
-#### `.clearEvents(): void`
+##### `.clearEvents(): void`
 
 Limpa todos os eventos armazenados na instância.
 
@@ -315,7 +315,7 @@ emitter.clearEvents();
 // Todos os eventos foram removidos.
 ```
 
-#### `.on<K>(event: K, callback: SubscriptionCallback<T[K]>): EventHandler`
+##### `.on<K>(event: K, callback: SubscriptionCallback<T[K]>): EventHandler`
 
 Adiciona um ouvinte para um evento.
 
@@ -337,7 +337,7 @@ emitter.emit("saudacao", "Alice");
 // Saída: Olá, Alice!
 ```
 
-#### `.once<K, R>(event: K, callback?: (...args: T[K]) => R): Promise<R | undefined>`
+##### `.once<K, R>(event: K, callback?: (...args: T[K]) => R): Promise<R | undefined>`
 
 Adiciona um ouvinte que executa uma vez para um evento.
 
@@ -361,7 +361,7 @@ emitter.emit("greet", "Bob");
 // Nenhuma saída
 ```
 
-#### `.emit<K>(event: K, ...args: T[K]): EventEmitter<T>`
+##### `.emit<K>(event: K, ...args: T[K]): EventEmitter<T>`
 
 Emite um evento.
 
@@ -381,7 +381,7 @@ emitter.emit("saudacao", "Alice");
 // Saída: Olá, Alice!
 ```
 
-#### `.emitOnce<K>(event: K, ...args: T[K]): EventEmitter<T>`
+##### `.emitOnce<K>(event: K, ...args: T[K]): EventEmitter<T>`
 
 Emite um evento uma vez.
 
@@ -402,7 +402,7 @@ emitter.on("configuracao", (config) => {
 // Saída: Configuração recebida: { tema: 'dark' }
 ```
 
-#### `.off<K>(event: K, callback?: SubscriptionCallback<T[K]>): void`
+##### `.off<K>(event: K, callback?: SubscriptionCallback<T[K]>): void`
 
 Remove um ouvinte de um evento.
 
@@ -425,7 +425,7 @@ emitter.emit("saudacao", "Alice");
 // Nenhuma saída
 ```
 
-#### `.offOnce<K>(event: K, callback?: (...args: T[K]) => any): void`
+##### `.offOnce<K>(event: K, callback?: (...args: T[K]) => any): void`
 
 Remove um ouvinte que executou uma vez de um evento.
 
@@ -449,7 +449,7 @@ emitter.emit("greet", "Alice");
 // Nenhuma saída
 ```
 
-#### `.pipe<K>(event: K, eventEmitter: EventEmitter<T>): EventHandler`
+##### `.pipe<K>(event: K, eventEmitter: EventEmitter<T>): EventHandler`
 
 Redireciona eventos de um emissor para outro.
 
@@ -475,7 +475,7 @@ emitter.emit("mensagem", "Olá mundo!");
 // Saída: Outro emissor recebeu: Olá mundo!
 ```
 
-#### `.pipeOnce<K>(event: K, eventEmitter: EventEmitter<T>): EventHandler`
+##### `.pipeOnce<K>(event: K, eventEmitter: EventEmitter<T>): EventHandler`
 
 Redireciona eventos de um emissor para outro uma vez.
 
