@@ -1,8 +1,18 @@
 module.exports = {
     preset: "ts-jest",
-    testEnvironment: "jsdom",
+    testEnvironment: "node",
+    roots: ["<rootDir>/src"],
     setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
-    moduleNameMapping: {
-        "\\.(css|less|scss|sass)$": "identity-obj-proxy",
+    transform: {
+        "^.+\\.ts$": "ts-jest",
     },
+    moduleNameMapping: {
+        "^@/(.*)$": "<rootDir>/src/$1",
+    },
+    // Configurações adicionais
+    testTimeout: 10000,
+    clearMocks: true,
+    resetMocks: true,
+    restoreMocks: true,
+    verbose: true,
 };
