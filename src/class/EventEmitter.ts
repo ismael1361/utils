@@ -1,9 +1,16 @@
 const _subscriptions = Symbol("subscriptions");
 const _oneTimeEvents = Symbol("oneTimeEvents");
 
+/**
+ * Tipo para o callback de uma inscrição de evento.
+ */
 export type SubscriptionCallback<T extends Array<any> = any[]> = ((...arg: T) => void) & {};
 
+/**
+ * Interface para o manipulador de eventos retornado pelo método `on`.
+ */
 export interface EventHandler {
+    /** Interrompe e remove o ouvinte de evento. */
     stop: () => void;
     remove: () => void;
 }
@@ -12,16 +19,22 @@ function runCallback<T extends Array<any> = any[]>(callback: SubscriptionCallbac
     callback(...arg);
 }
 
+/**
+ * Tipo para os parâmetros dos listeners de eventos.
+ */
 export type EventsListenersParameters<T extends Record<any, (...arg: any[]) => void> = Record<any, (...arg: any[]) => void>> = {
     [key in keyof T]: Parameters<T[key]>;
 } & {};
 
+/**
+ * Tipo para os listeners de eventos.
+ */
 export type EventsListeners<T extends Record<any, any[]> = Record<any, any[]>> = {
     [key in keyof T]: T[key];
 } & {};
 
 /**
- * EventEmitter class
+ * Classe EventEmitter para gerenciar e emitir eventos personalizados.
  */
 export class EventEmitter<T extends EventsListeners | EventsListenersParameters = any> {
     private [_subscriptions]: {
@@ -35,7 +48,7 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     private _ready: boolean = false;
 
     /**
-     * Create a new EventEmitter
+     * Cria uma nova instância de EventEmitter.
      */
     constructor() {
         this[_subscriptions] = [];
@@ -47,19 +60,19 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
-     * Wait for the emitter to be ready
-     * @param callback Callback to call when the emitter is ready
-     * @returns Promise
+     * Aguarda o emissor estar pronto para então executar um callback.
+     * @param {() => R | Promise<R>} [callback] - Função a ser executada quando o emissor estiver pronto.
+     * @returns {Promise<R>} Uma Promise que resolve com o resultado do callback.
      *
      * @example
-     * const emitter = new EventEmitter<{}>();
+     * const emitter = new EventEmitter();
      *
      * emitter.ready(() => {
-     *     console.log("Emitter is ready");
+     *     console.log("O emissor está pronto!");
      * });
      *
      * emitter.prepared = true;
-     * // Output: Emitter is ready
+     * // Saída: O emissor está pronto!
      */
     async ready<R = never>(callback?: () => R | Promise<R>): Promise<R> {
         if (this._ready) {
@@ -76,22 +89,22 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
-     * Property to get the emitter as prepared
-     * @returns boolean
+     * Verifica se o emissor está preparado.
+     * @returns {boolean} `true` se o emissor estiver pronto, caso contrário `false`.
      *
      * @example
-     * const emitter = new EventEmitter<{}>();
+     * const emitter = new EventEmitter();
      *
      * emitter.ready(() => {
-     *      console.log("Emitter is ready");
+     *      console.log("O emissor está pronto!");
      * });
      *
      * console.log(emitter.prepared);
-     * // Output: false
+     * // Saída: false
      *
      * emitter.prepared = true;
      * console.log(emitter.prepared);
-     * // Output: true
+     * // Saída: true
      */
     get prepared() {
         return this._ready;
@@ -99,17 +112,17 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
 
     /**
      * Property to set the emitter as prepared
-     * @param value Value to set
+     * @param {boolean} value - Define o estado de preparação do emissor.
      *
      * @example
-     * const emitter = new EventEmitter<{}>();
+     * const emitter = new EventEmitter();
      *
      * emitter.ready(() => {
-     *      console.log("Emitter is ready");
+     *      console.log("O emissor está pronto!");
      * });
      *
      * emitter.prepared = true;
-     * // Output: Emitter is ready
+     * // Saída: O emissor está pronto!
      */
     set prepared(value: boolean) {
         if (value === true) {
@@ -119,12 +132,12 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
-     * Clear all events
-     * @returns void
+     * Limpa todos os ouvintes de eventos.
+     * @returns {void}
      * @example
-     * const emitter = new EventEmitter<{}>();
+     * const emitter = new EventEmitter();
      * emitter.clearEvents();
-     * // All events are cleared
+     * // Todos os eventos foram removidos.
      */
     clearEvents() {
         this[_subscriptions] = [];
@@ -132,22 +145,22 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
-     * Add a listener to an event
-     * @param event Event to listen to
-     * @param callback Callback to call when the event is emitted
-     * @returns EventHandler
+     * Adiciona um ouvinte para um evento específico.
+     * @param {K} event - O nome do evento para o qual se inscrever.
+     * @param {SubscriptionCallback<T[K]>} callback - A função a ser executada quando o evento for emitido.
+     * @returns {EventHandler} Um objeto com um método `remove()` para cancelar a inscrição.
      * @example
      * const emitter = new EventEmitter<{
-     *      greet: [name: string];
-     *      farewell: [name: string];
+     *      saudacao: [nome: string];
+     *      despedida: [nome: string];
      * }>();
      *
-     * emitter.on("greet", (name) => {
-     *      console.log(`Hello, ${name}!`);
+     * emitter.on("saudacao", (nome) => {
+     *      console.log(`Olá, ${nome}!`);
      * });
      *
-     * emitter.emit("greet", "Alice");
-     * // Output: Hello, Alice!
+     * emitter.emit("saudacao", "Alice");
+     * // Saída: Olá, Alice!
      */
     on<K extends keyof T>(event: K, callback: SubscriptionCallback<T[K]>): EventHandler {
         if (this[_oneTimeEvents].has(event)) {
@@ -167,26 +180,25 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
-     * Remove a listener from an event
-     * @param event Event to remove the listener from
-     * @param callback Callback to remove
-     * @returns EventEmitter
+     * Remove um ouvinte de um evento específico.
+     * @param {K} event - O nome do evento.
+     * @param {SubscriptionCallback<T[K]>} [callback] - O callback específico a ser removido. Se omitido, remove todos os ouvintes para o evento.
+     * @returns {EventEmitter<T>} A própria instância do EventEmitter.
      *
      * @example
      * const emitter = new EventEmitter<{
-     *      greet: [name: string];
-     *      farewell: [name: string];
+     *      saudacao: [nome: string];
      * }>();
      *
-     * const listener = (name) => {
-     *      console.log(`Hello, ${name}!`);
+     * const ouvinte = (nome) => {
+     *      console.log(`Olá, ${nome}!`);
      * }
      *
-     * emitter.on("greet", listener);
-     * emitter.off("greet", listener);
+     * emitter.on("saudacao", ouvinte);
+     * emitter.off("saudacao", ouvinte);
      *
-     * emitter.emit("greet", "Alice");
-     * // No output
+     * emitter.emit("saudacao", "Alice");
+     * // Nenhuma saída
      */
     off<K extends keyof T>(event: K, callback?: SubscriptionCallback<T[K]>): EventEmitter<T> {
         this[_subscriptions] = this[_subscriptions].filter((s) => s.event !== event || (callback && s.callback !== callback));
@@ -194,10 +206,10 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
-     * Add a listener that will be removed after being called once
-     * @param event Event to listen to
-     * @param callback Callback to call when the event is emitted
-     * @returns Promise that resolves when the event is emitted
+     * Adiciona um ouvinte que será executado apenas uma vez e depois removido.
+     * @param {K} event - O nome do evento.
+     * @param {(...args: T[K]) => R} [callback] - A função a ser executada.
+     * @returns {Promise<R>} Uma Promise que resolve com o valor de retorno do callback quando o evento é emitido.
      * @example
      * const emitter = new EventEmitter<{
      *      greet: [name: string];
@@ -209,7 +221,7 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
      * });
      *
      * emitter.emit("greet", "Alice");
-     * // Output: Hello, Alice!
+     * // Saída: Hello, Alice!
      */
     once<K extends keyof T, R = any>(event: K, callback?: (...args: T[K]) => R): Promise<typeof callback extends undefined ? undefined : R> {
         return new Promise<any>((resolve) => {
@@ -230,10 +242,10 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
-     * Remove a listener that was added with `once`
-     * @param event Event to remove the listener from
-     * @param callback Callback to remove
-     * @returns EventEmitter
+     * Remove um ouvinte de uso único (`once`).
+     * @param {K} event - O nome do evento.
+     * @param {(...args: T[K]) => any} [callback] - O callback específico a ser removido.
+     * @returns {EventEmitter<T>} A própria instância do EventEmitter.
      *
      * @example
      * const emitter = new EventEmitter<{
@@ -241,12 +253,12 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
      *      farewell: [name: string];
      * }>();
      *
-     * const listener = (name) => {
-     *      console.log(`Hello, ${name}!`);
+     * const ouvinte = (nome) => {
+     *      console.log(`Olá, ${nome}!`);
      * }
      *
-     * emitter.once("greet", listener);
-     * emitter.offOnce("greet", listener);
+     * emitter.once("greet", ouvinte);
+     * emitter.offOnce("greet", ouvinte);
      */
     offOnce<K extends keyof T>(event: K, callback?: (...args: T[K]) => any): EventEmitter<T> {
         this[_subscriptions] = this[_subscriptions].filter((s) => s.event !== event || (callback && s.callback !== callback) || !s.once);
@@ -254,22 +266,21 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
-     * Emit an event
-     * @param event Event to emit
-     * @param arg Arguments to pass to the event
-     * @returns EventEmitter
+     * Emite um evento, acionando todos os seus ouvintes.
+     * @param {K} event - O nome do evento a ser emitido.
+     * @param {T[K]} arg - Argumentos para passar aos ouvintes do evento.
+     * @returns {EventEmitter<T>} A própria instância do EventEmitter.
      * @example
      * const emitter = new EventEmitter<{
-     *      greet: [name: string];
-     *      farewell: [name: string];
+     *      saudacao: [nome: string];
      * }>();
      *
-     * emitter.on("greet", (name) => {
-     *      console.log(`Hello, ${name}!`);
+     * emitter.on("saudacao", (nome) => {
+     *      console.log(`Olá, ${nome}!`);
      * });
      *
-     * emitter.emit("greet", "Alice");
-     * // Output: Hello, Alice!
+     * emitter.emit("saudacao", "Alice");
+     * // Saída: Olá, Alice!
      */
     emit<K extends keyof T>(event: K, ...arg: T[K]): EventEmitter<T> {
         if (this[_oneTimeEvents].has(event)) {
@@ -290,23 +301,23 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
-     * Emit an event only once
-     * @param event Event to emit
-     * @param arg Arguments to pass to the event
-     * @returns EventEmitter
+     * Emite um evento que só pode ser disparado uma única vez.
+     * Qualquer ouvinte adicionado posteriormente para este evento será executado imediatamente.
+     * @param {K} event - O nome do evento a ser emitido.
+     * @param {T[K]} arg - Argumentos para passar aos ouvintes.
+     * @returns {EventEmitter<T>} A própria instância do EventEmitter.
      * @example
      * const emitter = new EventEmitter<{
-     *      greet: [name: string];
-     *      farewell: [name: string];
+     *      configuracao: [config: object];
      * }>();
      *
-     * emitter.emitOnce("greet", "Alice");
-     * emitter.on("greet", (name) => {
-     *      console.log(`Hello, ${name}!`);
-     * });
+     * emitter.emitOnce("configuracao", { tema: "dark" });
      *
-     * emitter.emit("greet", "Bob");
-     * // Output: Hello, Alice!
+     * // Este ouvinte será chamado imediatamente porque 'configuracao' já foi emitido.
+     * emitter.on("configuracao", (config) => {
+     *      console.log(`Configuração recebida:`, config);
+     * });
+     * // Saída: Configuração recebida: { tema: 'dark' }
      */
     emitOnce<K extends keyof T>(event: K, ...arg: T[K]): EventEmitter<T> {
         if (this[_oneTimeEvents].has(event)) {
@@ -319,29 +330,27 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
-     * Pipe events from one emitter to another
-     * @param event Event to pipe
-     * @param eventEmitter Emitter to pipe to
-     * @returns BasicEventHandler
+     * Redireciona eventos de um emissor para outro.
+     * @param {K} event - O evento a ser redirecionado.
+     * @param {EventEmitter<T>} eventEmitter - O emissor de destino.
+     * @returns {EventHandler} Um objeto com um método `remove()` para parar o redirecionamento.
      * @example
      * const emitter = new EventEmitter<{
-     *      greet: [name: string];
-     *      farewell: [name: string];
+     *      mensagem: [texto: string];
      * }>();
      *
      * const anotherEmitter = new EventEmitter<{
-     *      greet: [name: string];
-     *      farewell: [name: string];
+     *      mensagem: [texto: string];
      * }>();
      *
-     * emitter.pipe("greet", anotherEmitter);
+     * emitter.pipe("mensagem", anotherEmitter);
      *
-     * anotherEmitter.on("greet", (name) => {
-     *      console.log(`Hello, ${name}!`);
+     * anotherEmitter.on("mensagem", (texto) => {
+     *      console.log(`Outro emissor recebeu: ${texto}`);
      * });
      *
-     * emitter.emit("greet", "Alice");
-     * // Output: Hello, Alice!
+     * emitter.emit("mensagem", "Olá mundo!");
+     * // Saída: Outro emissor recebeu: Olá mundo!
      */
     pipe<K extends keyof T>(event: K, eventEmitter: EventEmitter<T>) {
         return this.on(event, (...arg: T[K]) => {
@@ -350,29 +359,27 @@ export class EventEmitter<T extends EventsListeners | EventsListenersParameters 
     }
 
     /**
-     * Pipe events from one emitter to another, but only once
-     * @param event Event to pipe
-     * @param eventEmitter Emitter to pipe to
-     * @returns Promise that resolves when the event is emitted
+     * Redireciona um evento de um emissor para outro, apenas uma vez.
+     * @param {K} event - O evento a ser redirecionado.
+     * @param {EventEmitter<T>} eventEmitter - O emissor de destino.
+     * @returns {Promise<void>} Uma Promise que resolve quando o evento é redirecionado.
      * @example
      * const emitter = new EventEmitter<{
-     *      greet: [name: string];
-     *      farewell: [name: string];
+     *      login: [usuario: string];
      * }>();
      *
      * const anotherEmitter = new EventEmitter<{
-     *      greet: [name: string];
-     *      farewell: [name: string];
+     *      login: [usuario: string];
      * }>();
      *
-     * emitter.pipeOnce("greet", anotherEmitter);
+     * emitter.pipeOnce("login", anotherEmitter);
      *
-     * anotherEmitter.on("greet", (name) => {
-     *      console.log(`Hello, ${name}!`);
+     * anotherEmitter.on("login", (usuario) => {
+     *      console.log(`${usuario} logado no outro emissor.`);
      * });
      *
-     * emitter.emit("greet", "Alice");
-     * // Output: Hello, Alice!
+     * emitter.emit("login", "Alice");
+     * // Saída: Alice logado no outro emissor.
      */
     pipeOnce<K extends keyof T>(event: K, eventEmitter: EventEmitter<T>) {
         return this.once(event, (...arg: T[K]) => {
