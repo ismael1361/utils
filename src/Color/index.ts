@@ -1,5 +1,6 @@
 import colorNames from "./colorNames";
-import generatePalette, { ColorPalette } from "./generatePalette";
+import generatePalette from "./generatePalette";
+import { ColorPalette, ColorPalettes, getColorPalettes } from "./palettes";
 import HEX from "./hex";
 import RGB from "./rgb";
 import RGBA from "./rgba";
@@ -545,5 +546,38 @@ export class Color {
      */
     static distance(color1: ColorValue, color2: ColorValue): number {
         return new Color(color1).distance(color2);
+    }
+
+    /**
+     * Acessa uma coleção de paletas de cores predefinidas (ex: Material Design).
+     *
+     * Este getter estático retorna um objeto onde cada chave é o nome de uma cor
+     * (ex: 'red', 'blue') e o valor é a paleta de tons correspondente.
+     * Cada paleta é um objeto com chaves numéricas ('50', '100', ..., '900')
+     * que representam as diferentes tonalidades da cor.
+     *
+     * @static
+     * @returns {ColorPalettes} Um objeto contendo as paletas de cores.
+     *
+     * @example
+     * ```ts
+     * // Obtendo a paleta de cor 'red'
+     * const redPalette = Color.palettes.red;
+     *
+     * // Acessando o tom '500' (base) da paleta 'red'
+     * const red500 = redPalette["500"];
+     * console.log(red500.hex.value); // ex: "#f44336"
+     *
+     * // Acessando diretamente o valor hexadecimal de um tom mais claro
+     * const red100Hex = Color.palettes.red["100"].hex.value;
+     * console.log(red100Hex); // ex: "#ffcdd2"
+     *
+     * // Acessando um tom mais escuro de outra paleta
+     * const blue700 = Color.palettes.blue["700"];
+     * console.log(blue700.rgb.value); // ex: "rgb(25, 118, 210)"
+     * ```
+     */
+    static get palettes(): ColorPalettes {
+        return getColorPalettes();
     }
 }

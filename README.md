@@ -62,8 +62,17 @@ yarn add @ismael/utils
       - [`.lighten(ratio: number): Color`](#lightenratio-number-color)
       - [`.darken(ratio: number): Color`](#darkenratio-number-color)
     - [Métodos Estáticos](#métodos-estáticos)
+      - [`Color.parse(str: string): HEX | RGB | RGBA | HSL | HSLA`](#colorparsestr-string-hex--rgb--rgba--hsl--hsla)
+      - [`Color.convert<T extends "hex" | "rgb" | "rgba" | "hsl" | "hsla">(value: ColorValue, to: T): HEX | RGB | RGBA | HSL | HSLA`](#colorconvertt-extends-hex--rgb--rgba--hsl--hslavalue-colorvalue-to-t-hex--rgb--rgba--hsl--hsla)
+      - [`Color.fromHex(hex: string): Color`](#colorfromhexhex-string-color)
+      - [`Color.fromRgb(red: number, green: number, blue: number): Color`](#colorfromrgbred-number-green-number-blue-number-color)
+      - [`Color.fromRgba(red: number, green: number, blue: number, alpha: number): Color`](#colorfromrgbared-number-green-number-blue-number-alpha-number-color)
+      - [`Color.fromHsl(hue: number, saturation: number, lightness: number): Color`](#colorfromhslhue-number-saturation-number-lightness-number-color)
+      - [`Color.fromHsla(hue: number, saturation: number, lightness: number, alpha: number): Color`](#colorfromhslahue-number-saturation-number-lightness-number-alpha-number-color)
       - [`Color.random(): Color`](#colorrandom-color)
       - [`Color.textToColor(text: string): Color`](#colortexttocolortext-string-color)
+      - [`Color.distance(color1: ColorValue, color2: ColorValue): number`](#colordistancecolor1-colorvalue-color2-colorvalue-number)
+      - [`Color.palettes: ColorPalettes`](#colorpalettes-colorpalettes)
 
 ## Array
 
@@ -505,6 +514,8 @@ emitter.emit("login", "Bob");
 // Nenhuma saída
 ```
 
+---
+
 ## Color
 
 ### `class Color(value: ColorValue)`
@@ -677,6 +688,85 @@ console.log(darkBlue.hex.value); // "#000080"
 
 ### Métodos Estáticos
 
+#### `Color.parse(str: string): HEX | RGB | RGBA | HSL | HSLA`
+
+Analisa uma string de cor e a converte para o objeto de classe correspondente.
+
+**Exemplo:**
+```typescript
+const hexColor = Color.parse("#FF5733");
+console.log(hexColor instanceof HEX); // Output: true
+console.log(hexColor.value); // Output: "#FF5733"
+
+const rgbColor = Color.parse("rgb(255, 87, 51)");
+console.log(rgbColor instanceof RGB); // Output: true
+```
+
+#### `Color.convert<T extends "hex" | "rgb" | "rgba" | "hsl" | "hsla">(value: ColorValue, to: T): HEX | RGB | RGBA | HSL | HSLA`
+
+Converte um valor de cor para um formato de destino específico.
+
+**Exemplo:**
+```typescript
+const redRgb = Color.convert("#FF0000", "rgb");
+console.log(redRgb instanceof RGB); // Output: true
+console.log(redRgb.value); // Output: "rgb(255, 0, 0)"
+
+const blueHsla = Color.convert("blue", "hsla");
+console.log(blueHsla instanceof HSLA); // Output: true
+console.log(blueHsla.value); // Output: "hsla(240, 100%, 50%, 1)"
+```
+
+#### `Color.fromHex(hex: string): Color`
+
+Cria uma nova instância de `Color` a partir de uma string hexadecimal.
+
+**Exemplo:**
+```typescript
+const red = Color.fromHex("#FF0000");
+console.log(red.hex.value); // "#FF0000"
+```
+
+#### `Color.fromRgb(red: number, green: number, blue: number): Color`
+
+Cria uma nova instância de `Color` a partir de valores RGB.
+
+**Exemplo:**
+```typescript
+const blue = Color.fromRgb(0, 0, 255);
+console.log(blue.hex.value); // "#0000FF"
+```
+
+#### `Color.fromRgba(red: number, green: number, blue: number, alpha: number): Color`
+
+Cria uma nova instância de `Color` a partir de valores RGBA.
+
+**Exemplo:**
+```typescript
+const transparentGreen = Color.fromRgba(0, 255, 0, 0.5);
+console.log(transparentGreen.hex.value); // "#00FF0080"
+```
+
+#### `Color.fromHsl(hue: number, saturation: number, lightness: number): Color`
+
+Cria uma nova instância de `Color` a partir de valores HSL.
+
+**Exemplo:**
+```typescript
+const cyan = Color.fromHsl(180, 100, 50);
+console.log(cyan.hex.value); // "#00FFFF"
+```
+
+#### `Color.fromHsla(hue: number, saturation: number, lightness: number, alpha: number): Color`
+
+Cria uma nova instância de `Color` a partir de valores HSLA.
+
+**Exemplo:**
+```typescript
+const transparentMagenta = Color.fromHsla(300, 100, 50, 0.5);
+console.log(transparentMagenta.hex.value); // "#FF00FF80"
+```
+
 #### `Color.random(): Color`
 Gera uma cor aleatória.
 
@@ -695,3 +785,39 @@ const userColor = Color.textToColor('Ismael');
 // Sempre retornará a mesma cor para o mesmo texto
 console.log(userColor.hex.value); // "#00ff44"
 ```
+
+#### `Color.distance(color1: ColorValue, color2: ColorValue): number`
+
+Calcula a distância euclidiana entre duas cores no espaço de cores RGB.
+
+**Exemplo:**
+```typescript
+const distance = Color.distance("red", "blue");
+console.log(distance); // Output: 255
+```
+
+#### `Color.palettes: ColorPalettes`
+
+Acessa uma coleção de paletas de cores predefinidas (ex: Material Design).
+
+Este getter estático retorna um objeto onde cada chave é o nome de uma cor (ex: 'red', 'blue') e o valor é a paleta de tons correspondente. Cada paleta é um objeto com chaves numéricas ('50', '100', ..., '900') que representam as diferentes tonalidades da cor.
+
+**Exemplo:**
+```typescript
+// Obtendo a paleta de cor 'red'
+const redPalette = Color.palettes.red;
+
+// Acessando o tom '500' (base) da paleta 'red'
+const red500 = redPalette["500"];
+console.log(red500.hex.value); // ex: "#f44336"
+
+// Acessando diretamente o valor hexadecimal de um tom mais claro
+const red100Hex = Color.palettes.red["100"].hex.value;
+console.log(red100Hex); // ex: "#ffcdd2"
+
+// Acessando um tom mais escuro de outra paleta
+const blue700 = Color.palettes.blue["700"];
+console.log(blue700.rgb.value); // ex: "rgb(25, 118, 210)"
+```
+
+---

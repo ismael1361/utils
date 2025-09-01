@@ -1,28 +1,5 @@
-import { ColorValue, Color, HEX, HSL, RGB } from "./index";
-
-export interface ColorVariant<T extends string = string> {
-    name: T;
-    hex: HEX;
-    hsl: HSL;
-    rgb: RGB;
-}
-
-export interface ColorPalette {
-    "50": ColorVariant<"50">;
-    "100": ColorVariant<"100">;
-    "200": ColorVariant<"200">;
-    "300": ColorVariant<"300">;
-    "400": ColorVariant<"400">;
-    "500": ColorVariant<"500">;
-    "600": ColorVariant<"600">;
-    "700": ColorVariant<"700">;
-    "800": ColorVariant<"800">;
-    "900": ColorVariant<"900">;
-    A100: ColorVariant<"A100">;
-    A200: ColorVariant<"A200">;
-    A400: ColorVariant<"A400">;
-    A700: ColorVariant<"A700">;
-}
+import { ColorValue, Color } from "./index";
+import type { ColorPalette } from "./palettes";
 
 const generatePalette = (value: ColorValue): ColorPalette => {
     const color = new Color(value);
@@ -49,30 +26,16 @@ const generatePalette = (value: ColorValue): ColorPalette => {
         { name: "A700" as const, lightness: 42, saturation: 100 },
     ];
 
-    const palette: Partial<Record<keyof ColorPalette, ColorVariant<keyof ColorPalette>>> = {};
+    const palette: Partial<ColorPalette> = {};
 
     // Gerar cores principais
     mainVariants.forEach((variant) => {
-        const variantHsl = { h, s: variant.saturation, l: variant.lightness };
-        const color = Color.fromHsl(variantHsl.h, variantHsl.s, variantHsl.l);
-        palette[variant.name] = {
-            name: variant.name,
-            hex: color.hex,
-            hsl: color.hsl,
-            rgb: color.rgb,
-        };
+        palette[variant.name] = Color.fromHsl(h, variant.saturation, variant.lightness);
     });
 
     // Gerar cores de acento
     accentVariants.forEach((variant) => {
-        const variantHsl = { h, s: variant.saturation, l: variant.lightness };
-        const color = Color.fromHsl(variantHsl.h, variantHsl.s, variantHsl.l);
-        palette[variant.name] = {
-            name: variant.name,
-            hex: color.hex,
-            hsl: color.hsl,
-            rgb: color.rgb,
-        };
+        palette[variant.name] = Color.fromHsl(h, variant.saturation, variant.lightness);
     });
 
     return palette as ColorPalette;
