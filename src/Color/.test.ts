@@ -232,5 +232,18 @@ describe("Classe Color", () => {
             const distance = Color.distance("#ff0000", "#0000ff");
             expect(distance).toBeCloseTo(360.62, 2);
         });
+
+        it("deve calcular a distância entre duas cores", () => {
+            const color1 = new Color("#ff0000");
+            const color2 = new Color("#0000ff");
+            const distance = color1.distance(color2);
+            expect(distance).toBeCloseTo(360.62, 2);
+        });
+
+        it("palettes", () => {
+            const color = Color.palettes.red["500"];
+            expect(color).toBeInstanceOf(Color);
+            expect(color.hex.value.toLowerCase()).toBe("#f44336");
+        });
     });
 });

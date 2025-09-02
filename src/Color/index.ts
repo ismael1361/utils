@@ -1,6 +1,6 @@
 import colorNames from "./colorNames";
 import generatePalette from "./generatePalette";
-import { ColorPalette, ColorPalettes, getColorPalettes } from "./palettes";
+import { ColorPalette, ColorPalettes, colorPalettes } from "./palettes";
 import HEX from "./hex";
 import RGB from "./rgb";
 import RGBA from "./rgba";
@@ -578,6 +578,6 @@ export class Color {
      * ```
      */
     static get palettes(): ColorPalettes {
-        return getColorPalettes();
+        return colorPalettes;
     }
 }

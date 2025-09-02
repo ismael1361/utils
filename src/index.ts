@@ -4,3 +4,6 @@ export * from "./object";
 export * from "./function";
 export * from "./EventEmitter";
 export * from "./Color";
+export * from "./Math";
+export * from "./Animation";
+export * from "./SharedValue";
