@@ -1,5 +1,4 @@
 import { EventEmitter } from "../EventEmitter";
-import { cancelAnimation, requestAnimation } from "../Animation/Animation";
 
 /**
  * Uma classe que encapsula um valor, permitindo que ele seja "observável" e reativo.
@@ -133,22 +132,17 @@ export class SharedValues<S> extends EventEmitter<{
 
         this.ready(() => {
             const events: Function[] = [];
-            let request: number | null = null;
 
             for (const key in values) {
                 events.push(
                     this.current[key].on("value", () => {
-                        if (request) cancelAnimation(request);
-                        request = requestAnimation(() => {
-                            this.emit("value", key, this.current[key].value);
-                            this.emit("change", this.values);
-                        });
+                        this.emit("value", key, this.current[key].value);
+                        this.emit("change", this.values);
                     }).stop
                 );
             }
 
             this.once("destroy", () => {
-                if (request) cancelAnimation(request);
                 for (const stop of events) {
                     stop();
                 }
