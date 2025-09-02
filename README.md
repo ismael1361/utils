@@ -95,14 +95,14 @@ yarn add @ismael/utils
   - [Animation](#animation)
     - [`Animation.create: <S extends AnimationState = {}>(animation: AnimationFn<S>, state?: S) => AnimationProps<S>`](#animationcreate-s-extends-animationstate--animation-animationfns-state-s--animationpropss)
     - [Propriedades da Instância](#propriedades-da-instância-4)
-      - [`AnimationProps<S>.state: { [K in keyof S]: SharedValue<S[K]>; }`](#animationpropssstate--k-in-keyof-s-sharedvaluesk-)
-      - [`AnimationProps<S>.start: () => void`](#animationpropssstart---void)
-      - [`AnimationProps<S>.clear: () => void`](#animationpropssclear---void)
-      - [`AnimationProps<S>.pause: () => void`](#animationpropsspause---void)
-      - [`AnimationProps<S>.resume: () => void`](#animationpropssresume---void)
-      - [`AnimationProps<S>.play: () => void`](#animationpropssplay---void)
-      - [`AnimationProps<S>.stop: () => void`](#animationpropssstop---void)
-      - [`AnimationProps<S>.restart: () => void`](#animationpropssrestart---void)
+      - [`.state: { [K in keyof S]: SharedValue<S[K]>; }`](#state--k-in-keyof-s-sharedvaluesk-)
+      - [`.start: () => void`](#start---void)
+      - [`.clear: () => void`](#clear---void)
+      - [`.pause: () => void`](#pause---void)
+      - [`.resume: () => void`](#resume---void)
+      - [`.play: () => void`](#play---void)
+      - [`.stop: () => void`](#stop---void)
+      - [`.restart: () => void`](#restart---void)
     - [Métodos](#métodos)
       - [`Animation.timeSincePreviousFrame(): InputGenerator<number>`](#animationtimesincepreviousframe-inputgeneratornumber)
       - [`Animation.timing(value: SharedValue<number>, config?: TimingConfig): InputGenerator`](#animationtimingvalue-sharedvaluenumber-config-timingconfig-inputgenerator)
@@ -1107,7 +1107,7 @@ start();
 
 ### Propriedades da Instância
 
-#### `AnimationProps<S>.state: { [K in keyof S]: SharedValue<S[K]>; }`
+#### `.state: { [K in keyof S]: SharedValue<S[K]>; }`
 
 Um objeto contendo os SharedValues reativos do estado da animação. Você pode usar isso para ler o estado atual da sua animação de fora do gerador.
 
@@ -1118,7 +1118,7 @@ const myAnimation = Animation.create(..., { progress: 0 });
 console.log(myAnimation.state.progress.value);
 ```
 
-#### `AnimationProps<S>.start: () => void`
+#### `.start: () => void`
 
 Inicia a animação do começo. Se já estiver em execução, ela será reiniciada.
 
@@ -1128,7 +1128,7 @@ const myAnimation = Animation.create(..., { progress: 0 });
 myAnimation.start();
 ```
 
-#### `AnimationProps<S>.clear: () => void`
+#### `.clear: () => void`
 
 Limpa quaisquer recursos ou listeners criados pela animação (ex: via `onClear`).
 
@@ -1138,7 +1138,7 @@ const myAnimation = Animation.create(..., { progress: 0 });
 myAnimation.clear();
 ```
 
-#### `AnimationProps<S>.pause: () => void`
+#### `.pause: () => void`
 
 Pausa a animação em seu estado atual.
 
@@ -1148,7 +1148,7 @@ const myAnimation = Animation.create(..., { progress: 0 });
 myAnimation.pause();
 ```
 
-#### `AnimationProps<S>.resume: () => void`
+#### `.resume: () => void`
 
 Retoma uma animação que foi pausada.
 
@@ -1159,7 +1159,7 @@ myAnimation.pause();
 myAnimation.resume();
 ```
 
-#### `AnimationProps<S>.play: () => void`
+#### `.play: () => void`
 
 Um atalho para `resume()`. Retoma uma animação pausada.
 
@@ -1170,7 +1170,7 @@ myAnimation.pause();
 myAnimation.play();
 ```
 
-#### `AnimationProps<S>.stop: () => void`
+#### `.stop: () => void`
 
 Para a animação completamente, limpa seus recursos e redefine seu estado.
 
@@ -1180,7 +1180,7 @@ const myAnimation = Animation.create(..., { progress: 0 });
 myAnimation.stop();
 ```
 
-#### `AnimationProps<S>.restart: () => void`
+#### `.restart: () => void`
 
 Um atalho para `stop()` seguido de `start()`. Reinicia a animação.
 
