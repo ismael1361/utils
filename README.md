@@ -29,8 +29,9 @@ yarn add @ismael/utils
   - [String](#string)
     - [`capitalize(str: string): string`](#capitalizestr-string-string)
     - [`slugify(str: string): string`](#slugifystr-string-string)
+    - [`uuidv4(separator?: string): string`](#uuidv4separator-string-string)
   - [Math](#math)
-    - [`interpolate: (value: number, input: readonly number[], output: readonly number[], extrapolate?: ExtrapolationType) => number`](#interpolate-value-number-input-readonly-number-output-readonly-number-extrapolate-extrapolationtype--number)
+    - [`interpolate(value: number, input: readonly number[], output: readonly number[], extrapolate?: ExtrapolationType): number`](#interpolatevalue-number-input-readonly-number-output-readonly-number-extrapolate-extrapolationtype-number)
   - [`EventEmitter<T>`](#eventemittert)
     - [`class EventEmitter<T>()`](#class-eventemittert)
     - [Propriedades da Instância](#propriedades-da-instância)
@@ -77,32 +78,32 @@ yarn add @ismael/utils
       - [`Color.palettes: ColorPalettes`](#colorpalettes-colorpalettes)
   - [SharedValue](#sharedvalue)
     - [`class SharedValue<T>`](#class-sharedvaluet)
-    - [Propriedades da Instância](#propriedades-da-instância-2)
-      - [`.value: T`](#value-t)
-      - [`.on(event: 'value' | 'change', callback: (value: T) => void): void`](#onevent-value--change-callback-value-t--void-void)
-      - [`.off(event: 'value' | 'change', callback: (value: T) => void): void`](#offevent-value--change-callback-value-t--void-void)
-      - [`.clear(): void`](#clear-void)
+      - [Propriedades da Instância](#propriedades-da-instância-2)
+        - [`.value: T`](#value-t)
+        - [`.on(event: 'value' | 'change', callback: (value: T) => void): void`](#onevent-value--change-callback-value-t--void-void)
+        - [`.off(event: 'value' | 'change', callback: (value: T) => void): void`](#offevent-value--change-callback-value-t--void-void)
+        - [`.clear(): void`](#clear-void)
     - [`class SharedValues<S>`](#class-sharedvaluess)
-    - [Propriedades da Instância](#propriedades-da-instância-3)
-      - [`.values: S`](#values-s)
-      - [`.current: { [K in keyof S]: SharedValue<S[K]>; }`](#current--k-in-keyof-s-sharedvaluesk-)
-      - [`.on(event: 'value' | 'change', callback: (key: keyof S, value: S[keyof S]) => void): void`](#onevent-value--change-callback-key-keyof-s-value-skeyof-s--void-void)
-      - [`.off(event: 'value' | 'change', callback: (key: keyof S, value: S[keyof S]) => void): void`](#offevent-value--change-callback-key-keyof-s-value-skeyof-s--void-void)
-      - [`.initialize(): void`](#initialize-void)
-      - [`.destroy(): void`](#destroy-void)
-      - [`.clear(): void`](#clear-void-1)
+      - [Propriedades da Instância](#propriedades-da-instância-3)
+        - [`.values: S`](#values-s)
+        - [`.current: { [K in keyof S]: SharedValue<S[K]>; }`](#current--k-in-keyof-s-sharedvaluesk-)
+        - [`.on(event: 'value' | 'change', callback: (key: keyof S, value: S[keyof S]) => void): void`](#onevent-value--change-callback-key-keyof-s-value-skeyof-s--void-void)
+        - [`.off(event: 'value' | 'change', callback: (key: keyof S, value: S[keyof S]) => void): void`](#offevent-value--change-callback-key-keyof-s-value-skeyof-s--void-void)
+        - [`.initialize(): void`](#initialize-void)
+        - [`.destroy(): void`](#destroy-void)
+        - [`.clear(): void`](#clear-void-1)
     - [`sharedValues: <S>(state: S) => SharedValues<S>`](#sharedvalues-sstate-s--sharedvaluess)
   - [Animation](#animation)
     - [`Animation.create: <S extends AnimationState = {}>(animation: AnimationFn<S>, state?: S) => AnimationProps<S>`](#animationcreate-s-extends-animationstate--animation-animationfns-state-s--animationpropss)
     - [Propriedades da Instância](#propriedades-da-instância-4)
       - [`.state: { [K in keyof S]: SharedValue<S[K]>; }`](#state--k-in-keyof-s-sharedvaluesk-)
-      - [`.start: () => void`](#start---void)
-      - [`.clear: () => void`](#clear---void)
-      - [`.pause: () => void`](#pause---void)
-      - [`.resume: () => void`](#resume---void)
-      - [`.play: () => void`](#play---void)
-      - [`.stop: () => void`](#stop---void)
-      - [`.restart: () => void`](#restart---void)
+      - [`.start(): void`](#start-void)
+      - [`.clear(): void`](#clear-void-2)
+      - [`.pause(): void`](#pause-void)
+      - [`.resume(): void`](#resume-void)
+      - [`.play(): void`](#play-void)
+      - [`.stop(): void`](#stop-void)
+      - [`.restart(): void`](#restart-void)
     - [Métodos](#métodos)
       - [`Animation.timeSincePreviousFrame(): InputGenerator<number>`](#animationtimesincepreviousframe-inputgeneratornumber)
       - [`Animation.timing(value: SharedValue<number>, config?: TimingConfig): InputGenerator`](#animationtimingvalue-sharedvaluenumber-config-timingconfig-inputgenerator)
@@ -271,9 +272,28 @@ console.log(slug);
 // => 'exemplo-de-ttulo-com-acentuao-smbolos'
 ```
 
+### `uuidv4(separator?: string): string`
+
+Gera um identificador único universal (UUID) versão 4. Esta implementação não é criptograficamente segura e é baseada em `Math.random()`. É adequada para gerar identificadores únicos em cenários onde a segurança não é a principal preocupação.
+
+**Exemplo:**
+```typescript
+import { uuidv4 } from '@ismael/utils';
+
+// Gera um UUID sem separadores
+const id1 = uuidv4();
+console.log(id1);
+// => "a1b2c3d4e5f64a7b8c9d0e1f2a3b4c5d" (exemplo)
+
+// Gera um UUID com hífens como separadores (formato padrão)
+const id2 = uuidv4("-");
+console.log(id2);
+// => "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" (exemplo)
+```
+
 ## Math
 
-### `interpolate: (value: number, input: readonly number[], output: readonly number[], extrapolate?: ExtrapolationType) => number`
+### `interpolate(value: number, input: readonly number[], output: readonly number[], extrapolate?: ExtrapolationType): number`
 
 Mapeia um valor de um intervalo de entrada para um intervalo de saída usando interpolação linear. É útil para animações, mapeamento de gestos e normalização de dados.
 
@@ -942,21 +962,21 @@ console.log(opacity.value); // Logs: 0
 
 ---
 
-### Propriedades da Instância
+#### Propriedades da Instância
 
-#### `.value: T`
+##### `.value: T`
 
 Obtém o valor atual. Define um novo valor. Se o novo valor for diferente do atual, emite os eventos 'value' e 'change'.
 
-#### `.on(event: 'value' | 'change', callback: (value: T) => void): void`
+##### `.on(event: 'value' | 'change', callback: (value: T) => void): void`
 
 Adiciona um listener para um evento especifico.
 
-#### `.off(event: 'value' | 'change', callback: (value: T) => void): void`
+##### `.off(event: 'value' | 'change', callback: (value: T) => void): void`
 
 Remove um listener para um evento especifico.
 
-#### `.clear(): void`
+##### `.clear(): void`
 
 Limpa o valor e emite o evento 'change' com o valor inicial.
 
@@ -1000,33 +1020,33 @@ console.log(stateManager.values); // { x: 0, y: 100, opacity: 1 }
 
 ---
 
-### Propriedades da Instância
+#### Propriedades da Instância
 
-#### `.values: S`
+##### `.values: S`
 
 Obtém um snapshot dos valores atuais.
 
-#### `.current: { [K in keyof S]: SharedValue<S[K]>; }`
+##### `.current: { [K in keyof S]: SharedValue<S[K]>; }`
 
 Obtém um objeto com instâncias de `SharedValue` para cada propriedade do estado.
 
-#### `.on(event: 'value' | 'change', callback: (key: keyof S, value: S[keyof S]) => void): void`
+##### `.on(event: 'value' | 'change', callback: (key: keyof S, value: S[keyof S]) => void): void`
 
 Adiciona um listener para um evento especifico.
 
-#### `.off(event: 'value' | 'change', callback: (key: keyof S, value: S[keyof S]) => void): void`
+##### `.off(event: 'value' | 'change', callback: (key: keyof S, value: S[keyof S]) => void): void`
 
 Remove um listener para um evento especifico.
 
-#### `.initialize(): void`
+##### `.initialize(): void`
 
 Reinicia todos os valores para o estado inicial.
 
-#### `.destroy(): void`
+##### `.destroy(): void`
 
 Limpa todos os listeners.
 
-#### `.clear(): void`
+##### `.clear(): void`
 
 Limpa todos os valores e emite o evento 'change' com o estado inicial.
 
@@ -1118,7 +1138,7 @@ const myAnimation = Animation.create(..., { progress: 0 });
 console.log(myAnimation.state.progress.value);
 ```
 
-#### `.start: () => void`
+#### `.start(): void`
 
 Inicia a animação do começo. Se já estiver em execução, ela será reiniciada.
 
@@ -1128,7 +1148,7 @@ const myAnimation = Animation.create(..., { progress: 0 });
 myAnimation.start();
 ```
 
-#### `.clear: () => void`
+#### `.clear(): void`
 
 Limpa quaisquer recursos ou listeners criados pela animação (ex: via `onClear`).
 
@@ -1138,7 +1158,7 @@ const myAnimation = Animation.create(..., { progress: 0 });
 myAnimation.clear();
 ```
 
-#### `.pause: () => void`
+#### `.pause(): void`
 
 Pausa a animação em seu estado atual.
 
@@ -1148,7 +1168,7 @@ const myAnimation = Animation.create(..., { progress: 0 });
 myAnimation.pause();
 ```
 
-#### `.resume: () => void`
+#### `.resume(): void`
 
 Retoma uma animação que foi pausada.
 
@@ -1159,7 +1179,7 @@ myAnimation.pause();
 myAnimation.resume();
 ```
 
-#### `.play: () => void`
+#### `.play(): void`
 
 Um atalho para `resume()`. Retoma uma animação pausada.
 
@@ -1170,7 +1190,7 @@ myAnimation.pause();
 myAnimation.play();
 ```
 
-#### `.stop: () => void`
+#### `.stop(): void`
 
 Para a animação completamente, limpa seus recursos e redefine seu estado.
 
@@ -1180,7 +1200,7 @@ const myAnimation = Animation.create(..., { progress: 0 });
 myAnimation.stop();
 ```
 
-#### `.restart: () => void`
+#### `.restart(): void`
 
 Um atalho para `stop()` seguido de `start()`. Reinicia a animação.
 

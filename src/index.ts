@@ -7,3 +7,4 @@ export * from "./Color";
 export * from "./Math";
 export * from "./Animation";
 export * from "./SharedValue";
+export * from "./Graph";
