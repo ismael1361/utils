@@ -14,11 +14,14 @@ export type Inputs = Input[];
 export type LoopCallback = (i: number) => InputGenerator;
 
 export interface TimingConfig {
+    from: number;
     to: number;
     easing?: EasingFunction;
     delay?: number;
     duration?: number;
 }
+
+export type TimingCallback = (i: number) => void | boolean;
 
 export type AnimationState = Record<string, unknown>;
 

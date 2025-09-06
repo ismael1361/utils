@@ -1,4 +1,4 @@
-import { AnimationFn, AnimationProps, AnimationState, Input, InputGenerator, Inputs, LoopCallback, TimingConfig } from "./Types";
+import { AnimationFn, AnimationProps, AnimationState, Input, InputGenerator, Inputs, LoopCallback, TimingConfig, TimingCallback } from "./Types";
 import { Easing } from "./Easing";
 import { SharedValue, sharedValues } from "../SharedValue";
 
@@ -24,6 +24,7 @@ const materializeGenerator = (input: Input) => {
 };
 
 const defaultTimingConfig: Required<TimingConfig> = {
+    from: 0,
     to: 1,
     easing: Easing.linear,
     delay: 0,
@@ -51,32 +52,53 @@ export function* timeSincePreviousFrame(): InputGenerator<number> {
 }
 
 /**
- * Anima um valor compartilhado (`SharedValue`) de um ponto a outro ao longo do tempo.
+ * Anima propriedade de um `SharedValue<number>` ou executa uma função de retorno de chamada com o valor animado.
  *
- * @param {SharedValue<number>} value O valor compartilhado a ser animado.
- * @param {TimingConfig} [config] Configurações da animação como `to`, `duration`, `easing` e `delay`.
+ * @param {SharedValue<number> | TimingCallback} value `SharedValue<number>` ou uma função de retorno de chamada que recebe o valor atual e retorna `true` para cancelar a animação.
+ * @param {TimingConfig} [config] Configurações da animação como `from`, `to`, `duration`, `easing` e `delay`.
  * @returns {InputGenerator} Um gerador que, quando executado, realiza a animação.
  * @example
  * ```ts
  * // Anima a opacidade de 0 para 1 em 500ms.
  * const opacity = new SharedValue(0);
+ *
+ * // Usando SharedValue diretamente
  * yield* Animation.timing(opacity, { to: 1, duration: 500 });
+ *
+ * // Usando uma função de retorno de chamada
+ * yield* timing((val) => {
+ *   console.log(`Current value: ${val}`);
+ *   opacity.value = val;
+ *   return val > 0.8; // Cancela a animação quando o valor ultrapassar 0.8
+ * }, { to: 1, duration: 1000 });
  * ```
  */
-export function* timing(value: SharedValue<number>, config?: TimingConfig): InputGenerator {
+export function* timing(value: SharedValue<number> | TimingCallback, config: TimingConfig = defaultTimingConfig): InputGenerator {
     "worklet";
-    const from = value.value;
-    const { to, easing, delay, duration } = { ...defaultTimingConfig, ...config };
+    if (value instanceof SharedValue) {
+        config.from = value.value;
+    }
+
+    const { from = 0, to, easing, delay, duration } = { ...defaultTimingConfig, ...config };
+
     yield* wait(delay);
     const start: number = (yield).deltaTime;
     const end = start + duration;
+    let cancel: boolean = false;
+
     for (let current = start; current < end; ) {
         const progress = easing((current - start) / duration);
         const val = from + (to - from) * progress;
-        value.value = val;
-        current += yield* timeSincePreviousFrame();
+
+        if (value instanceof SharedValue) value.value = val;
+        if (value instanceof Function) cancel = value(val) || cancel;
+
+        if (!cancel) current += yield* timeSincePreviousFrame();
+        if (cancel) break;
     }
-    value.value = to;
+
+    if (value instanceof SharedValue) value.value = to;
+    if (value instanceof Function) value(to);
 }
 
 /**

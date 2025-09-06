@@ -106,7 +106,7 @@ yarn add @ismael/utils
       - [`.restart(): void`](#restart-void)
     - [Métodos](#métodos)
       - [`Animation.timeSincePreviousFrame(): InputGenerator<number>`](#animationtimesincepreviousframe-inputgeneratornumber)
-      - [`Animation.timing(value: SharedValue<number>, config?: TimingConfig): InputGenerator`](#animationtimingvalue-sharedvaluenumber-config-timingconfig-inputgenerator)
+      - [`Animation.timing(value: SharedValue<number> | TimingCallback, config?: TimingConfig): InputGenerator`](#animationtimingvalue-sharedvaluenumber--timingcallback-config-timingconfig-inputgenerator)
       - [`Animation.wait(duration?: number): InputGenerator`](#animationwaitduration-number-inputgenerator)
       - [`Animation.waitUntil(value: SharedValue<boolean>, invert?: boolean): InputGenerator`](#animationwaituntilvalue-sharedvalueboolean-invert-boolean-inputgenerator)
       - [`Animation.delay(duration?: number, animation?: Input | undefined): InputGenerator`](#animationdelayduration-number-animation-input--undefined-inputgenerator)
@@ -1237,9 +1237,9 @@ const animation = Animation.create(function* (state) {
 animation.start();
 ```
 
-#### `Animation.timing(value: SharedValue<number>, config?: TimingConfig): InputGenerator`
+#### `Animation.timing(value: SharedValue<number> | TimingCallback, config?: TimingConfig): InputGenerator`
 
-Anima um valor compartilhado (`SharedValue`) de um ponto a outro ao longo do tempo.
+Anima propriedade de um `SharedValue<number>` ou executa uma função de retorno de chamada com o valor animado.
 
 **Exemplo:**
 ```typescript
@@ -1253,6 +1253,14 @@ const animation = Animation.create(function* (state) {
 
   // Anima de volta para 0.
   yield* Animation.timing(state.progress, { to: 0, duration: 1000 });
+
+  yield* Animation.wait(500); // Pausa por 500ms.
+
+  // Usando uma função de retorno de chamada.
+  yield* Animation.timing((value) => {
+    console.log(`Progresso: ${value}`);
+    state.progress = value;
+  }, { to: 0, duration: 1000 });
 
   console.log("Animação concluída!");
 });
