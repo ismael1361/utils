@@ -6,3 +6,5 @@ export * from "./EventEmitter";
 export * from "./Color";
 export * from "./Math";
 export * from "./Graph";
+export * from "./Date";
+export * from "./PathInfo";

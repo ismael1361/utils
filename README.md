@@ -25,11 +25,19 @@ yarn add @ismael1361/utils
     - [`throttle<T>(func: T, limit: number): (...args) => void`](#throttletfunc-t-limit-number-args--void)
   - [Object](#object)
     - [`deepClone<T>(obj: T): T`](#deepclonetobj-t-t)
+    - [`deepEqual<T>(obj1: T, obj2: T, ignoreConstructor?: boolean): boolean`](#deepequaltobj1-t-obj2-t-ignoreconstructor-boolean-boolean)
     - [`merge<T, U>(target: T, source: U): T & U`](#merget-utarget-t-source-u-t--u)
+    - [`setKeyValue<T extends Record<PropertyKey, any>>(obj: T, key: string, value: any): T`](#setkeyvaluet-extends-recordpropertykey-anyobj-t-key-string-value-any-t)
+    - [`getKeyValue<T extends Record<PropertyKey, any>, R>(obj: T, key: string): R`](#getkeyvaluet-extends-recordpropertykey-any-robj-t-key-string-r)
+    - [`removeKeys<T extends Record<PropertyKey, any>>(obj: T, keys: string[]): T`](#removekeyst-extends-recordpropertykey-anyobj-t-keys-string-t)
   - [String](#string)
     - [`capitalize(str: string): string`](#capitalizestr-string-string)
     - [`slugify(str: string): string`](#slugifystr-string-string)
     - [`uuidv4(separator?: string): string`](#uuidv4separator-string-string)
+    - [`clsx(...classes: (string | clsxType | Record<string, clsxType>)[]): string`](#clsxclasses-string--clsxtype--recordstring-clsxtype-string)
+  - [Date](#date)
+    - [`formatDate(date: Date, format: string): string`](#formatdatedate-date-format-string-string)
+      - [Tokens de Formato Disponíveis:](#tokens-de-formato-disponíveis)
   - [Math](#math)
     - [`interpolate(value: number, input: readonly number[], output: readonly number[], extrapolate?: ExtrapolationType): number`](#interpolatevalue-number-input-readonly-number-output-readonly-number-extrapolate-extrapolationtype-number)
   - [`EventEmitter<T>`](#eventemittert)
@@ -76,6 +84,32 @@ yarn add @ismael1361/utils
       - [`Color.textToColor(text: string): Color`](#colortexttocolortext-string-color)
       - [`Color.distance(color1: ColorValue, color2: ColorValue): number`](#colordistancecolor1-colorvalue-color2-colorvalue-number)
       - [`Color.palettes: ColorPalettes`](#colorpalettes-colorpalettes)
+  - [PathInfo](#pathinfo)
+    - [`class PathInfo(path: string | (string | number | PathInfo)[])`](#class-pathinfopath-string--string--number--pathinfo)
+    - [Propriedades da Instância](#propriedades-da-instância-2)
+      - [`.path: string`](#path-string)
+      - [`.keys: (string | number)[]`](#keys-string--number)
+      - [`.key: string | number | null`](#key-string--number--null)
+      - [`.parent: PathInfo | null`](#parent-pathinfo--null)
+      - [`.parentPath: string | null`](#parentpath-string--null)
+      - [`.pathKeys: (string | number)[]`](#pathkeys-string--number)
+    - [Métodos da Instância](#métodos-da-instância-2)
+      - [`.child(childKey: string | number | (string | number)[]): PathInfo`](#childchildkey-string--number--string--number-pathinfo)
+      - [`.childPath(childKey: string | number | (string | number)[]): string`](#childpathchildkey-string--number--string--number-string)
+      - [`.equals(otherPath: string | PathInfo): boolean`](#equalsotherpath-string--pathinfo-boolean)
+      - [`.isAncestorOf(descendantPath: string | PathInfo): boolean`](#isancestorofdescendantpath-string--pathinfo-boolean)
+      - [`.isDescendantOf(ancestorPath: string | PathInfo): boolean`](#isdescendantofancestorpath-string--pathinfo-boolean)
+      - [`.isOnTrailOf(otherPath: string | PathInfo): boolean`](#isontrailofotherpath-string--pathinfo-boolean)
+      - [`.isChildOf(otherPath: string | PathInfo): boolean`](#ischildofotherpath-string--pathinfo-boolean)
+      - [`.isParentOf(otherPath: string | PathInfo): boolean`](#isparentofotherpath-string--pathinfo-boolean)
+    - [Métodos Estáticos](#métodos-estáticos-1)
+      - [`PathInfo.get(path: string | (string | number | PathInfo)[]): PathInfo`](#pathinfogetpath-string--string--number--pathinfo-pathinfo)
+      - [`PathInfo.getChildPath(path: string, childKey: string | number): string`](#pathinfogetchildpathpath-string-childkey-string--number-string)
+      - [`PathInfo.getPathKeys(path: string): (string | number)[]`](#pathinfogetpathkeyspath-string-string--number)
+      - [`PathInfo.variablesKeys(varPath: string): (string | number)[]`](#pathinfovariableskeysvarpath-string-string--number)
+      - [`PathInfo.extractVariables(varPath: string, fullPath: string): PathInfoVariables`](#pathinfoextractvariablesvarpath-string-fullpath-string-pathinfovariables)
+      - [`PathInfo.fillVariables(varPath: string, fullPath: string): string`](#pathinfofillvariablesvarpath-string-fullpath-string-string)
+      - [`PathInfo.fillVariables2(varPath: string, vars: Omit<PathInfoVariables, "length">): string`](#pathinfofillvariables2varpath-string-vars-omitpathinfovariables-length-string)
 
 ## Array
 
@@ -169,6 +203,38 @@ clone.d.e[0] = 99;
 console.log(original.d.e[0]); // Saída: 10
 ```
 
+### `deepEqual<T>(obj1: T, obj2: T, ignoreConstructor?: boolean): boolean`
+
+Compara recursivamente dois objetos ou valores para determinar se são profundamente iguais.
+
+Esta função verifica a igualdade de valores primitivos, objetos, arrays e datas. Para objetos e arrays, a comparação é feita elemento por elemento e propriedade por propriedade.
+
+**Exemplo:**
+```typescript
+import { deepEquals } from '@ismael1361/utils';
+
+const objA = {
+  a: 1,
+  b: {
+    c: [10, 20],
+    d: new Date('2023-01-01')
+  }
+};
+
+const objB = {
+  a: 1,
+  b: {
+    c: [10, 20],
+    d: new Date('2023-01-01')
+  }
+};
+
+const objC = { a: 1, b: { c: [10, 99] } }; // Valor diferente no array aninhado
+
+console.log(deepEqual(objA, objB)); // => true
+console.log(deepEqual(objA, objC)); // => false
+```
+
 ### `merge<T, U>(target: T, source: U): T & U`
 
 Mescla recursivamente as propriedades de dois objetos em um novo objeto, sem modificar os originais.
@@ -182,6 +248,66 @@ const source = { b: { c: 4, e: 5 }, f: 6 };
 
 const result = merge(target, source);
 // result é { a: 1, b: { c: 4, d: 3, e: 5 }, f: 6 }
+```
+
+### `setKeyValue<T extends Record<PropertyKey, any>>(obj: T, key: string, value: any): T`
+
+Define um valor em um objeto aninhado usando notação de ponto. A função modifica o objeto original e retorna uma nova referência do objeto de nível superior. Se os objetos intermediários no caminho não existirem, eles serão criados. Se o `value` fornecido for `undefined`, a propriedade de destino será removida.
+
+**Exemplo:**
+```typescript
+import { setKeyValue } from '@ismael1361/utils';
+
+const user = { name: 'John', address: { street: '123 Main St' } };
+
+// Define uma nova propriedade aninhada
+setKeyValue(user, 'address.city', 'New York');
+// user agora é { name: 'John', address: { street: '123 Main St', city: 'New York' } }
+
+// Atualiza uma propriedade existente
+setKeyValue(user, 'name', 'John Doe');
+// user agora é { name: 'John Doe', address: { ... } }
+
+// Remove uma propriedade passando undefined
+setKeyValue(user, 'address.street', undefined);
+// user agora é { name: 'John Doe', address: { city: 'New York' } }
+```
+
+### `getKeyValue<T extends Record<PropertyKey, any>, R>(obj: T, key: string): R`
+
+Obtém um valor de um objeto aninhado usando notação de ponto.
+
+**Exemplo:**
+```typescript
+import { getKeyValue } from '@ismael1361/utils';
+
+const user = {
+  name: 'Jane Doe',
+  address: {
+    city: 'London',
+    zip: 'E1 6AN'
+  }
+};
+
+const city = getKeyValue(user, 'address.city');
+console.log(city); // => 'London'
+
+const country = getKeyValue(user, 'address.country');
+console.log(country); // => undefined
+```
+
+### `removeKeys<T extends Record<PropertyKey, any>>(obj: T, keys: string[]): T`
+
+Remove uma lista de chaves de um objeto.
+> Nota: A implementação atual remove de forma confiável apenas chaves de nível superior.
+
+**Exemplo:**
+```typescript
+import { removeKeys } from '@ismael1361/utils';
+
+const data = { id: 1, name: 'Item', description: 'Details', internal: true };
+const cleanedData = removeKeys(data, ['description', 'internal']);
+console.log(cleanedData); // => { id: 1, name: 'Item' }
 ```
 
 ## String
@@ -230,6 +356,85 @@ console.log(id1);
 const id2 = uuidv4("-");
 console.log(id2);
 // => "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" (exemplo)
+```
+
+### `clsx(...classes: (string | clsxType | Record<string, clsxType>)[]): string`
+
+Uma função utilitária para construir strings de `className` de forma condicional. Inspirada na popular biblioteca `clsx`, esta função permite juntar nomes de classes de maneira flexível, aceitando strings, objetos com condições booleanas e valores falsy que são ignorados.
+
+**Exemplo:**
+```typescript
+import { clsx } from '@ismael1361/utils';
+
+const isActive = true;
+const hasError = false;
+
+const classNames = clsx(
+  'button', // Sempre inclui a classe 'button'
+  'p-4',
+  isActive && 'button-active', // Inclui 'button-active' se isActive for true
+  null, // Ignorado
+  {
+    'button-primary': isActive, // Inclui 'button-primary' porque isActive é true
+    'button-error': hasError,   // Não inclui 'button-error' porque hasError é false
+  },
+  undefined // Ignorado
+);
+
+console.log(classNames);
+// => "button p-4 button-active button-primary"
+```
+
+## Date
+
+### `formatDate(date: Date, format: string): string`
+
+Formata um objeto `Date` em uma string personalizada, com base em um modelo de formato.
+Esta função é inspirada em bibliotecas populares como Moment.js e Day.js, permitindo
+um controle granular sobre a representação textual de datas e horas.
+
+Para usar texto literal que possa ser confundido com tokens (ex: "MM"),
+envolva-o em colchetes. Ex: `[My month is] MMMM`.
+
+#### Tokens de Formato Disponíveis:
+
+| Token  | Saída de Exemplo | Descrição                               |
+| ------ | ---------------- | --------------------------------------- |
+| `YYYY` | `2023`           | Ano com 4 dígitos                       |
+| `YY`   | `23`             | Ano com 2 dígitos                       |
+| `MMMM` | `Janeiro`        | Nome completo do mês                    |
+| `MMM`  | `Jan`            | Nome abreviado do mês                   |
+| `MM`   | `01`             | Mês com 2 dígitos (01-12)               |
+| `M`    | `1`              | Mês (1-12)                              |
+| `DD`   | `05`             | Dia do mês com 2 dígitos (01-31)        |
+| `D`    | `5`              | Dia do mês (1-31)                       |
+| `dddd` | `Qui`            | Nome abreviado do dia da semana         |
+| `ddd`  | `Qui`            | Nome abreviado do dia da semana         |
+| `dd`   | `Qu`             | Dia da semana com 2 letras              |
+| `d`    | `4`              | Dia da semana (0=Dom, 1=Seg, ...)       |
+| `HH`   | `14`             | Hora com 2 dígitos (formato 24h, 00-23) |
+| `H`    | `14`             | Hora (formato 24h, 0-23)                |
+| `hh`   | `02`             | Hora com 2 dígitos (formato 12h, 01-12) |
+| `h`    | `2`              | Hora (formato 12h, 1-12)                |
+| `mm`   | `09`             | Minuto com 2 dígitos (00-59)            |
+| `m`    | `9`              | Minuto (0-59)                           |
+| `ss`   | `05`             | Segundo com 2 dígitos (00-59)           |
+| `s`    | `5`              | Segundo (0-59)                          |
+| `SSS`  | `042`            | Milissegundo com 3 dígitos              |
+| `SS`   | `04`             | Milissegundo com 2 dígitos              |
+| `S`    | `42`             | Milissegundo                            |
+| `A`    | `PM`             | AM/PM em maiúsculas                     |
+| `a`    | `pm`             | am/pm em minúsculas                     |
+
+**Exemplo:**
+```typescript
+import { formatDate } from '@ismael1361/utils';
+
+// Formata uma data para "05 de Janeiro de 2023"
+const date = new Date('2023-01-05');
+const formattedDate = formatDate(date, 'D de MMMM de YYYY');
+console.log(formattedDate);
+// => "05 de Janeiro de 2023"
 ```
 
 ## Math
@@ -871,3 +1076,397 @@ console.log(red100Hex); // ex: "#ffcdd2"
 const blue700 = Color.palettes.blue["700"];
 console.log(blue700.rgb.value); // ex: "rgb(25, 118, 210)"
 ```
+
+---
+
+## PathInfo
+
+Uma classe utilitária para analisar, manipular e comparar caminhos hierárquicos. Facilita o trabalho com caminhos que podem conter segmentos de string e índices de array, como 'users/123/posts[0]'.
+
+### `class PathInfo(path: string | (string | number | PathInfo)[])`
+
+Cria uma nova instância de `PathInfo` analisando um caminho. O caminho pode ser fornecido como uma string (com notação de barra e colchetes) ou como um array de segmentos de caminho que serão concatenados.
+
+**Exemplo de Criação:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+// Criando a partir de uma string
+const pathFromString = new PathInfo('users/123/posts[0]');
+console.log(pathFromString.path); // => "users/123/posts[0]"
+console.log(pathFromString.keys); // => ['', 'users', '123', 'posts', 0]
+
+// Criando a partir de um array de segmentos
+const pathFromArray = new PathInfo(['users', 123, 'posts', 0]);
+console.log(pathFromArray.path); // => "users/123/posts[0]"
+
+// Criando a partir de uma combinação complexa
+const part1 = 'users/123';
+const part2 = new PathInfo('posts');
+const pathFromParts = new PathInfo([part1, part2, 0, 'title']);
+console.log(pathFromParts.path); // => "users/123/posts[0]/title"
+```
+
+### Propriedades da Instância
+
+#### `.path: string`
+
+A string de caminho normalizada e completa.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const p = new PathInfo('users/123/posts[0]');
+console.log(p.path); // "users/123/posts[0]"
+```
+
+#### `.keys: (string | number)[]`
+
+Um array dos segmentos (chaves) que compõem o caminho. Chaves de objeto são strings, e índices de array são números. O primeiro elemento é uma string vazia para representar a raiz.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const p = new PathInfo('users/123/posts[0]');
+console.log(p.keys); // ["", "users", "123", "posts", 0]
+```
+
+#### `.key: string | number | null`
+
+Obtém o último segmento (chave ou índice) do caminho. Retorna `null` se o caminho estiver vazio.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const p = new PathInfo('users/123/posts[0]');
+console.log(p.key); // 0
+
+const p2 = new PathInfo('users/123');
+console.log(p2.key); // "123"
+```
+
+#### `.parent: PathInfo | null`
+
+Obtém uma nova instância de `PathInfo` representando o caminho pai. Retorna `null` se o caminho não tiver um pai (ou seja, for a raiz).
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const p = new PathInfo('users/123/profile');
+const parent = p.parent;
+console.log(parent.path); // "users/123"
+```
+
+#### `.parentPath: string | null`
+
+Obtém a string do caminho pai. É um atalho conveniente para `this.parent?.path`.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const p = new PathInfo('users/123/profile');
+console.log(p.parentPath); // "users/123"
+```
+
+#### `.pathKeys: (string | number)[]`
+
+Um alias para a propriedade `keys`. Retorna o array de segmentos (chaves) que compõem o caminho.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const p = new PathInfo('users/123/posts[0]');
+console.log(p.pathKeys); // ['', 'users', '123', 'posts', 0]
+```
+
+---
+
+### Métodos da Instância
+
+#### `.child(childKey: string | number | (string | number)[]): PathInfo`
+
+Cria uma nova instância de `PathInfo` para um caminho filho. Este método permite navegar para baixo na hierarquia de caminhos.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const userPath = new PathInfo('users/123');
+
+// Navegando para um filho com uma chave de string
+const profilePath = userPath.child('profile');
+console.log(profilePath.path); // => "users/123/profile"
+
+// Navegando para um filho com um caminho composto
+const postTitlePath = userPath.child('posts[0]/title');
+console.log(postTitlePath.path); // => "users/123/posts[0]/title"
+```
+
+#### `.childPath(childKey: string | number | (string | number)[]): string`
+
+Obtém a string de um caminho filho. É um atalho conveniente para `this.child(childKey).path`.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const userPath = new PathInfo('users/123');
+
+const profilePathString = userPath.childPath('profile');
+console.log(profilePathString); // => "users/123/profile"
+```
+
+#### `.equals(otherPath: string | PathInfo): boolean`
+
+Verifica se este caminho corresponde estruturalmente a outro caminho.
+
+A comparação é flexível e considera wildcards (`*`) e variáveis nomeadas (`$name`) como correspondentes a qualquer segmento na mesma posição no outro caminho.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const templatePath = new PathInfo('users/$uid/posts/*');
+
+// Corresponde a um caminho concreto
+console.log(templatePath.equals('users/ewout/posts/post1')); // => true
+
+// A correspondência é bidirecional
+const concretePath = new PathInfo('users/ewout/posts/post1');
+console.log(concretePath.equals(templatePath)); // => true
+
+// Não corresponde se o número de segmentos for diferente
+console.log(templatePath.equals('users/ewout/posts')); // => false
+```
+
+#### `.isAncestorOf(descendantPath: string | PathInfo): boolean`
+
+Verifica se o caminho atual é um ancestral do caminho descendente fornecido.
+
+Um caminho é considerado um ancestral se o caminho descendente começar com todos os segmentos do caminho atual. A comparação é flexível e lida com wildcards (`*`) e variáveis (`$name`).
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const userPath = new PathInfo('users/123');
+
+// 'users/123' é um ancestral de 'users/123/posts'
+console.log(userPath.isAncestorOf('users/123/posts')); // => true
+
+// Um caminho não é ancestral de si mesmo
+console.log(userPath.isAncestorOf('users/123')); // => false
+
+// A comparação funciona com wildcards
+const templatePath = new PathInfo('users/*');
+console.log(templatePath.isAncestorOf('users/abc/profile')); // => true
+```
+
+#### `.isDescendantOf(ancestorPath: string | PathInfo): boolean`
+
+Verifica se o caminho atual é um descendente do caminho ancestral fornecido.
+
+Um caminho é considerado um descendente se começar com todos os segmentos do caminho ancestral. A comparação é flexível e lida com wildcards (`*`) e variáveis (`$name`).
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const postPath = new PathInfo('users/123/posts/post1');
+
+// 'users/123/posts/post1' é um descendente de 'users/123'
+console.log(postPath.isDescendantOf('users/123')); // => true
+
+// Um caminho não é descendente de si mesmo
+console.log(postPath.isDescendantOf('users/123/posts/post1')); // => false
+
+// A comparação funciona com wildcards
+console.log(postPath.isDescendantOf('users/*/posts')); // => true
+```
+
+#### `.isOnTrailOf(otherPath: string | PathInfo): boolean`
+
+Verifica se o caminho atual e outro caminho estão na mesma "trilha".
+
+Dois caminhos estão na mesma trilha se um for ancestral do outro, ou se forem idênticos. Essencialmente, isso verifica se um caminho é um prefixo do outro. A comparação é flexível e lida com wildcards (`*`) e variáveis (`$name`).
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const userPath = new PathInfo('users/123');
+const userPostsPath = new PathInfo('users/123/posts');
+
+// Um ancestral está na trilha de seu descendente
+console.log(userPath.isOnTrailOf(userPostsPath)); // => true
+
+// Um descendente está na trilha de seu ancestral
+console.log(userPostsPath.isOnTrailOf(userPath)); // => true
+
+// Um caminho está na trilha de si mesmo
+console.log(userPath.isOnTrailOf('users/123')); // => true
+
+// Caminhos não relacionados não estão na mesma trilha
+console.log(userPath.isOnTrailOf('products/456')); // => false
+```
+
+#### `.isChildOf(otherPath: string | PathInfo): boolean`
+
+Verifica se o caminho atual é um filho direto do caminho pai fornecido.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const childPath = new PathInfo('users/123/posts');
+
+// 'users/123/posts' é um filho direto de 'users/123'
+console.log(childPath.isChildOf('users/123')); // => true
+
+// Não é um filho direto de 'users'
+console.log(childPath.isChildOf('users')); // => false
+```
+
+#### `.isParentOf(otherPath: string | PathInfo): boolean`
+
+Verifica se o caminho atual é o pai direto do caminho filho fornecido.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const parentPath = new PathInfo('users/123');
+
+console.log(parentPath.isParentOf('users/123/posts')); // => true
+console.log(parentPath.isParentOf('users/123/posts/post1')); // => false
+```
+
+---
+
+### Métodos Estáticos
+
+#### `PathInfo.get(path: string | (string | number | PathInfo)[]): PathInfo`
+
+Um método de fábrica estático para criar uma nova instância de `PathInfo`. É uma alternativa conveniente ao uso direto do construtor.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const pathInfo = PathInfo.get('users/123/profile');
+console.log(pathInfo.path); // => "users/123/profile"
+console.log(pathInfo.key);  // => "profile"
+```
+
+#### `PathInfo.getChildPath(path: string, childKey: string | number): string`
+
+Um método utilitário estático para construir a string de um caminho filho.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const userProfilePath = PathInfo.getChildPath('users/123', 'profile');
+console.log(userProfilePath); // => "users/123/profile"
+
+const firstPostPath = PathInfo.getChildPath('users/123/posts', 0);
+console.log(firstPostPath); // => "users/123/posts[0]"
+```
+
+#### `PathInfo.getPathKeys(path: string): (string | number)[]`
+
+Analisa uma string de caminho e a converte em um array de seus segmentos (chaves).
+
+Este método estático fornece uma maneira pública de obter os segmentos de um caminho, como chaves de objeto (string) ou índices de array (number).
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const segments = PathInfo.getPathKeys('users/123/posts[0]/title');
+console.log(segments);
+// => ['users', '123', 'posts', 0, 'title']
+
+const userSegments = PathInfo.getPathKeys('users/ewout');
+console.log(userSegments);
+// => ['users', 'ewout']
+```
+
+#### `PathInfo.variablesKeys(varPath: string): (string | number)[]`
+
+(Internal) Analisa um caminho de template e extrai uma lista de suas chaves de variáveis. Este método identifica wildcards (`*`) e variáveis nomeadas (`$name`) e retorna um array com informações sobre elas, incluindo seus índices e nomes.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const keys = PathInfo.variablesKeys('users/$uid/posts/*');
+// => [0, '$uid', 'uid', 1]
+
+const keys2 = PathInfo.variablesKeys('items/*');
+// => [0]
+```
+
+#### `PathInfo.extractVariables(varPath: string, fullPath: string): PathInfoVariables`
+
+Extrai valores de um caminho completo (`fullPath`) que correspondem a variáveis em um caminho de template (`varPath`).
+
+Este método compara a estrutura de um caminho de template, que pode conter wildcards (`*`) e variáveis nomeadas (`$name`), com um caminho real. Se as estruturas corresponderem, ele retorna um objeto contendo os valores extraídos.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const vars1 = PathInfo.extractVariables('users/$uid/posts/$postid', 'users/ewout/posts/post1');
+// vars1 é: { 0: 'ewout', 1: 'post1', $uid: 'ewout', uid: 'ewout', $postid: 'post1', postid: 'post1', length: 2 }
+
+const vars2 = PathInfo.extractVariables('users/*\/posts/*\/$property', 'users/ewout/posts/post1/title');
+// vars2 é: { 0: 'ewout', 1: 'post1', 2: 'title', $property: 'title', property: 'title', length: 3 }
+
+const vars3 = PathInfo.extractVariables('users/$user/friends[*]/$friend', 'users/dora/friends[4]/diego');
+// vars3 é: { 0: 'dora', 1: 4, 2: 'diego', $user: 'dora', user: 'dora', $friend: 'diego', friend: 'diego', length: 3 }
+```
+
+#### `PathInfo.fillVariables(varPath: string, fullPath: string): string`
+
+Preenche as variáveis em um caminho de template (`varPath`) com os valores correspondentes de um caminho completo (`fullPath`).
+
+Este método cria um novo caminho substituindo wildcards (`*`) e variáveis nomeadas (`$name`) no template pelos segmentos do caminho completo. Ele lança um erro se as estruturas dos caminhos não forem compatíveis.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const template = 'users/$uid/posts/*';
+const concretePath = 'users/ewout/posts/post1/title';
+
+// O caminho resultante terá o mesmo comprimento que o template.
+const filledPath = PathInfo.fillVariables(template, concretePath);
+console.log(filledPath);
+// => "users/ewout/posts/post1"
+```
+
+#### `PathInfo.fillVariables2(varPath: string, vars: Omit<PathInfoVariables, "length">): string`
+
+Preenche as variáveis em um caminho de template com valores de um objeto ou array.
+
+Este método substitui wildcards (`*`) e variáveis nomeadas (`$name`) em um caminho de template pelos valores fornecidos em um objeto `vars`. A substituição é feita com base na ordem das variáveis no caminho e nos índices numéricos do objeto `vars`.
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const template = 'users/$uid/posts/*';
+const variables = { 0: 'ewout', 1: 'post123', uid: 'ewout' };
+
+const finalPath = PathInfo.fillVariables2(template, variables);
+console.log(finalPath); // => "users/ewout/posts/post123"
+```
+
+----
