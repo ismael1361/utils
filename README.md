@@ -26,7 +26,8 @@ yarn add @ismael1361/utils
   - [Object](#object)
     - [`deepClone<T>(obj: T): T`](#deepclonetobj-t-t)
     - [`deepEqual<T>(obj1: T, obj2: T, ignoreConstructor?: boolean): boolean`](#deepequaltobj1-t-obj2-t-ignoreconstructor-boolean-boolean)
-    - [`merge<T, U>(target: T, source: U): T & U`](#merget-utarget-t-source-u-t--u)
+    - [`deepObservable<T>(target: T, callback?: DeepObservableCallback): T`](#deepobservablettarget-t-callback-deepobservablecallback-t)
+    - [` deepMerge<T, U>(target: T, source: U): T & U`](#-deepmerget-utarget-t-source-u-t--u)
     - [`setKeyValue<T extends Record<PropertyKey, any>>(obj: T, key: string, value: any): T`](#setkeyvaluet-extends-recordpropertykey-anyobj-t-key-string-value-any-t)
     - [`getKeyValue<T extends Record<PropertyKey, any>, R>(obj: T, key: string): R`](#getkeyvaluet-extends-recordpropertykey-any-robj-t-key-string-r)
     - [`removeKeys<T extends Record<PropertyKey, any>>(obj: T, keys: string[]): T`](#removekeyst-extends-recordpropertykey-anyobj-t-keys-string-t)
@@ -235,18 +236,46 @@ console.log(deepEqual(objA, objB)); // => true
 console.log(deepEqual(objA, objC)); // => false
 ```
 
-### `merge<T, U>(target: T, source: U): T & U`
+### `deepObservable<T>(target: T, callback?: DeepObservableCallback): T`
+
+Cria um proxy "profundo" (deep proxy) para um objeto, permitindo observar todas as mutações (set e delete) em qualquer nível de aninhamento. Quando uma propriedade é alterada ou removida, uma função de callback opcional é invocada com detalhes sobre a mutação.
+
+**Exemplo:**
+```typescript
+import { deepObservable } from '@ismael1361/utils';
+
+const state = { user: { name: 'John' }, posts: [{ title: 'Post 1' }] };
+const mutations = [];
+
+const observableState = deepObservable(state, (event) => {
+  mutations.push({ path: event.path, oldValue: event.oldValue, newValue: event.newValue });
+});
+
+// Realizando mutações
+observableState.user.name = 'Jane';
+observableState.posts[0].title = 'First Post';
+observableState.posts.push({ title: 'Post 2' });
+
+console.log(mutations);
+// [
+//   { path: 'user.name', oldValue: 'John', newValue: 'Jane' },
+//   { path: 'posts[0].title', oldValue: 'Post 1', newValue: 'First Post' },
+//   { path: 'posts[1]', oldValue: undefined, newValue: { title: 'Post 2' } }
+// ]
+```
+
+### ` deepMerge<T, U>(target: T, source: U): T & U`
 
 Mescla recursivamente as propriedades de dois objetos em um novo objeto, sem modificar os originais.
 
 **Exemplo:**
 ```typescript
-import { merge } from '@ismael1361/utils';
+import { deepMerge } from '@ismael1361/utils';
 
 const target = { a: 1, b: { c: 2, d: 3 } };
 const source = { b: { c: 4, e: 5 }, f: 6 };
 
-const result = merge(target, source);
+const result = deepMerge(target, source);
 // result é { a: 1, b: { c: 4, d: 3, e: 5 }, f: 6 }
 ```
 

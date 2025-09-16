@@ -1,4 +1,5 @@
 export * from "./deepClone";
 export * from "./deepEqual";
-export * from "./merge";
+export * from "./deepObservable";
+export * from "./deepMerge";
 export * from "./dot-notation";

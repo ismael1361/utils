@@ -25,24 +25,24 @@
  *   f: 6 // Adiciona a propriedade 'f'
  * };
  *
- * const result = merge(target, source);
+ * const result = deepMerge(target, source);
  * // result é { a: 1, b: { c: 4, d: 3, e: 5 }, f: 6 }
  */
-export function merge<T extends object, U extends object>(target: T, source: U): T & U {
-    const result = { ...target } as T & U;
+export function deepMerge<T extends object, U extends object>(target: T, source: U): T & U {
+	const result = { ...target } as T & U;
 
-    for (const key in source) {
-        if (source.hasOwnProperty(key)) {
-            const sourceValue = source[key];
-            const targetValue = target[key as unknown as keyof T];
+	for (const key in source) {
+		if (source.hasOwnProperty(key)) {
+			const sourceValue = source[key];
+			const targetValue = target[key as unknown as keyof T];
 
-            if (typeof sourceValue === "object" && sourceValue !== null && typeof targetValue === "object" && targetValue !== null) {
-                result[key as unknown as keyof T] = merge(targetValue, sourceValue) as any;
-            } else {
-                result[key as unknown as keyof T] = sourceValue as any;
-            }
-        }
-    }
+			if (typeof sourceValue === "object" && sourceValue !== null && typeof targetValue === "object" && targetValue !== null) {
+				result[key as unknown as keyof T] = deepMerge(targetValue, sourceValue) as any;
+			} else {
+				result[key as unknown as keyof T] = sourceValue as any;
+			}
+		}
+	}
 
-    return result;
+	return result;
 }
