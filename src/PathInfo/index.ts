@@ -191,6 +191,29 @@ export class PathInfo {
 	}
 
 	/**
+	 * Retorna a representação em string do caminho.
+	 * Este método é chamado automaticamente quando a instância de `PathInfo`
+	 * é usada em um contexto que espera uma string (como concatenação ou logging).
+	 *
+	 * @returns {string} A string completa do caminho.
+	 *
+	 * @example
+	 * ```ts
+	 * const path = new PathInfo('users/123');
+	 *
+	 * // Chamada explícita
+	 * console.log(path.toString()); // => "users/123"
+	 *
+	 * // Chamada implícita em template string
+	 * const fullUrl = `https://example.com/api/${path}`;
+	 * console.log(fullUrl); // => "https://example.com/api/users/123"
+	 * ```
+	 */
+	toString() {
+		return this.path;
+	}
+
+	/**
 	 * Cria uma nova instância de `PathInfo` para um caminho filho.
 	 * Este método permite navegar para baixo na hierarquia de caminhos.
 	 *

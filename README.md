@@ -95,6 +95,7 @@ yarn add @ismael1361/utils
       - [`.parentPath: string | null`](#parentpath-string--null)
       - [`.pathKeys: (string | number)[]`](#pathkeys-string--number)
     - [Métodos da Instância](#métodos-da-instância-2)
+      - [`.toString(): string`](#tostring-string)
       - [`.child(childKey: string | number | (string | number)[]): PathInfo`](#childchildkey-string--number--string--number-pathinfo)
       - [`.childPath(childKey: string | number | (string | number)[]): string`](#childpathchildkey-string--number--string--number-string)
       - [`.equals(otherPath: string | PathInfo): boolean`](#equalsotherpath-string--pathinfo-boolean)
@@ -1217,6 +1218,24 @@ console.log(p.pathKeys); // ['', 'users', '123', 'posts', 0]
 ---
 
 ### Métodos da Instância
+
+#### `.toString(): string`
+
+Retorna a representação em string do caminho. Este método é chamado automaticamente quando a instância de `PathInfo` é usada em um contexto que espera uma string (como concatenação ou logging).
+
+**Exemplo:**
+```typescript
+import { PathInfo } from '@ismael1361/utils';
+
+const path = new PathInfo('users/123');
+
+// Chamada explícita
+console.log(path.toString()); // => "users/123"
+
+// Chamada implícita em template string
+const fullUrl = `https://example.com/api/${path}`;
+console.log(fullUrl); // => "https://example.com/api/users/123"
+```
 
 #### `.child(childKey: string | number | (string | number)[]): PathInfo`
 
